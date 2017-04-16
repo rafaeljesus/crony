@@ -3,8 +3,8 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/EmpregoLigado/cron-srv/pkg/checker"
-	"github.com/EmpregoLigado/cron-srv/pkg/response"
+	"github.com/rafaeljesus/crony/pkg/checker"
+	"github.com/rafaeljesus/crony/pkg/response"
 )
 
 type HealthzHandler struct {

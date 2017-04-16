@@ -1,8 +1,8 @@
 package repos
 
 import (
-	"github.com/EmpregoLigado/cron-srv/pkg/models"
 	"github.com/jinzhu/gorm"
+	"github.com/rafaeljesus/crony/pkg/models"
 )
 
 type EventRepo interface {

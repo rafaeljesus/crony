@@ -8,9 +8,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/EmpregoLigado/cron-srv/pkg/mocks"
-	"github.com/EmpregoLigado/cron-srv/pkg/models"
 	"github.com/nbari/violetear"
+	"github.com/rafaeljesus/crony/pkg/mocks"
+	"github.com/rafaeljesus/crony/pkg/models"
 )
 
 func TestEventsIndex(t *testing.T) {

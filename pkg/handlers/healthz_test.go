@@ -6,9 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/EmpregoLigado/cron-srv/pkg/checker"
-	"github.com/EmpregoLigado/cron-srv/pkg/mocks"
 	"github.com/nbari/violetear"
+	"github.com/rafaeljesus/crony/pkg/checker"
+	"github.com/rafaeljesus/crony/pkg/mocks"
 )
 
 func TestHealthzIndex(t *testing.T) {

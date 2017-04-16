@@ -5,14 +5,14 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/EmpregoLigado/cron-srv/pkg/checker"
-	"github.com/EmpregoLigado/cron-srv/pkg/config"
-	"github.com/EmpregoLigado/cron-srv/pkg/datastore"
-	"github.com/EmpregoLigado/cron-srv/pkg/handlers"
-	"github.com/EmpregoLigado/cron-srv/pkg/repos"
-	"github.com/EmpregoLigado/cron-srv/pkg/scheduler"
 	log "github.com/Sirupsen/logrus"
 	"github.com/nbari/violetear"
+	"github.com/rafaeljesus/crony/pkg/checker"
+	"github.com/rafaeljesus/crony/pkg/config"
+	"github.com/rafaeljesus/crony/pkg/datastore"
+	"github.com/rafaeljesus/crony/pkg/handlers"
+	"github.com/rafaeljesus/crony/pkg/repos"
+	"github.com/rafaeljesus/crony/pkg/scheduler"
 	"github.com/spf13/cobra"
 )
 

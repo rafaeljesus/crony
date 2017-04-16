@@ -4,10 +4,10 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/EmpregoLigado/cron-srv/pkg/models"
-	"github.com/EmpregoLigado/cron-srv/pkg/repos"
-	"github.com/EmpregoLigado/cron-srv/pkg/runner"
 	log "github.com/Sirupsen/logrus"
+	"github.com/rafaeljesus/crony/pkg/models"
+	"github.com/rafaeljesus/crony/pkg/repos"
+	"github.com/rafaeljesus/crony/pkg/runner"
 	"github.com/robfig/cron"
 )
 

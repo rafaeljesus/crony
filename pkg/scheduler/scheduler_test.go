@@ -3,8 +3,8 @@ package scheduler
 import (
 	"testing"
 
-	"github.com/EmpregoLigado/cron-srv/pkg/mocks"
-	"github.com/EmpregoLigado/cron-srv/pkg/models"
+	"github.com/rafaeljesus/crony/pkg/mocks"
+	"github.com/rafaeljesus/crony/pkg/models"
 )
 
 func TestScheduleAll(t *testing.T) {

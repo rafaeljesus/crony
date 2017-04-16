@@ -1,7 +1,7 @@
 package mocks
 
 import (
-	"github.com/EmpregoLigado/cron-srv/pkg/models"
+	"github.com/rafaeljesus/crony/pkg/models"
 )
 
 type EventRepoMock struct {

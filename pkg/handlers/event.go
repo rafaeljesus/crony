@@ -5,11 +5,11 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/EmpregoLigado/cron-srv/pkg/models"
-	"github.com/EmpregoLigado/cron-srv/pkg/repos"
-	"github.com/EmpregoLigado/cron-srv/pkg/response"
-	"github.com/EmpregoLigado/cron-srv/pkg/scheduler"
 	"github.com/nbari/violetear"
+	"github.com/rafaeljesus/crony/pkg/models"
+	"github.com/rafaeljesus/crony/pkg/repos"
+	"github.com/rafaeljesus/crony/pkg/response"
+	"github.com/rafaeljesus/crony/pkg/scheduler"
 )
 
 type EventsHandler struct {
