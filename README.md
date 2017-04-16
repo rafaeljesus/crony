@@ -1,65 +1,213 @@
-## Cron Srv
+## Crony :clock530:
 
 * All the flexibility and power of Cron as a Service.
 * Simple REST protocol, integrating with a web application in a easy and straightforward way.
 * No more wasting time building and managing scheduling infrastructure.
 
 ## Basic Concepts
-Cron Srv works by calling back to your application via HTTP GET according to a schedule constructed by you or your application.
+Crony works by calling back to your application via HTTP GET according to a schedule constructed by you or your application.
 
 ## Setup
 Env vars
 ```bash
-export DATASTORE_URL="postgresql://postgres@localhost/cron_srv_dev?sslmode=disable"
+export DATASTORE_URL="postgresql://postgres@localhost/crony?sslmode=disable"
 export PORT=3000
 ```
-> **Note:** You must have created the database 'cron_srv_dev' in postgres running at localhost (or replace with valid database name and IP);
 
 ```sh
-mkdir -p $GOPATH/src/github.com/EmpregoLigado
-cd $GOPATH/src/github.com/EmpregoLigado 
-git clone https://github.com/EmpregoLigado/cron-srv.git
-cd cron-srv
+mkdir -p $GOPATH/src/github.com/rafaeljesus
+cd $GOPATH/src/github.com/rafaeljesus
+git clone https://github.com/rafaeljesus/crony.git
+cd crony
 glide install
 go build
 ```
 
 ## Running server
 ```
-./cron-srv
-# => Starting Cron Service at port 3000
+./crony
+# => Starting Crony at port 3000
 ```
 
-### Create an Cron
-- Request
-```bash
-curl -X POST -H "Content-Type: application/json" \
--d '{"url": "example.com/api/v1/stats", "expression": "0 5 * * * *", "status": "active", "max_retries": 2, "retry_timeout": 3}' \
-localhost:3000/v1/events
-```
+## Authentication
+This API does not ship with an authentication layer. You **should not** expose the API to the Internet. This API should be deployed behind a firewall, only your application servers should be allowed to send requests to the API.
 
-- Response
-```json
-{
-  "id": 1,
-  "url": "example.com/api/v1/stats",
-  "expression": "0 5 * * * *",
-  "status": "active",
-  "max_retries": 2,
-  "retry_timeout": 3,
-  "updated_at": "2016-12-10T14:02:37.064641296-02:00"
-}
-```
+## API Endpoints
+- [`GET` /health](#get-health) - Get application health
+- [`GET` /events](#get-events) - Get a list of scheduled events
+- [`POST` /events](#post-events) - Create a event
+- [`GET` /events/:id](#get-eventsid) - Get a single event
+- [`DELETE` /events/:id](#delete-eventsid) - Delete a event
+- [`PATCH` /events/:id](#patch-eventsid) - Update a event
 
-## API Documentation
-|HTTP verb| path|                   handle|
-|:--|:--|:--|:--|
-|GET        |/v1/healthz|HealthzIndex     |return a state of server `{"alive":"up"}`|
-|GET        |/v1/events|EventsIndex       |display a list of all events|
-|POST       |/v1/events|EventsCreate      |create a new event|
-|GET        |/v1/events/:id|EventsShow    |display a specific event|
-|PUT        |/v1/events/:id|EventsUpdate  |update a specific event|
-|DELETE     |/v1/events/:id|EventsDelete  |delete a specific event|
+### API Documentation
+#### `GET` `/events`
+Get a list of available events.
+- Method: `GET`
+- Endpoint: `/events`
+- Responses:
+    * 200 OK
+    ```json
+    [
+       {
+          "id":1,
+          "url":"your-api/job",
+          "expression": "0 5 * * * *",
+          "status": "active",
+          "max_retries": 2,
+          "retry_timeout": 3,
+          "created_at": "2016-12-10T14:02:37.064641296-02:00",
+          "updated_at": "2016-12-10T14:02:37.064641296-02:00"
+       }
+    ]
+    ```
+    - `id` is the id of the event.
+    - `url`: is the url callback to called.
+    - `expression`: is cron expression format.
+    - `status`: tell if the event is active or paused.
+    - `max_retries`: the number of attempts to send event.
+    - `retry_timeout`: is the retry timeout.
+
+#### `POST` `/events`
+Create a new event.
+- Method: `POST`
+- Endpoint: `/events`
+- Input:
+    The `Content-Type` HTTP header should be set to `application/json`
+
+    ```json
+   {
+      "url":"your-api/job",
+      "expression": "0 5 * * * *",
+      "status": "active",
+      "max_retries": 2,
+      "retry_timeout": 3,
+   }
+    ```
+- Responses:
+    * 201 Created
+    ```json
+   {
+      "url":"your-api/job",
+      "expression": "0 5 * * * *",
+      "status": "active",
+      "max_retries": 2,
+      "retry_timeout": 3,
+      "updated_at": "2016-12-10T14:02:37.064641296-02:00",
+      "created_at": "2016-12-10T14:02:37.064641296-02:00"
+   }
+    ```
+    * 422 Unprocessable entity:
+    ```json
+    {
+      "status":"invalid_json",
+      "message":"Cannot decode the given JSON payload"
+    }
+    ```
+    * 400 Bad Request
+    ```json
+    {
+      "status":"invalid_event",
+      "message":"<reason>"
+    }
+    ```
+    Common reasons:
+    - the event job already scheduled. The `message` will be `Event already exists`
+    - the expression must be crontab format.
+    - the retry must be between `0` and `10`
+    - the status must be `active` or `resumed`
+
+#### `GET` `/events/:id`
+Get a specific event.
+- Method: `GET`
+- Endpoint: `/events/:id`
+- Responses:
+    * 200 OK
+    ```json
+   {
+      "url":"your-api/job",
+      "expression": "0 5 * * * *",
+      "status": "active",
+      "max_retries": 2,
+      "retry_timeout": 3,
+      "updated_at": "2016-12-10T14:02:37.064641296-02:00",
+      "created_at": "2016-12-10T14:02:37.064641296-02:00"
+   }
+    ```
+    * 404 Not Found
+    ```json
+    {
+      "status":"event_not_found",
+      "message":"The event was not found"
+    }
+    ```
+
+#### `DELETE` `/events/:id`
+Remove a scheduled event.
+- Method: `DELETE`
+- Endpoint: `/events/:id`
+- Responses:
+    * 200 OK
+    ```json
+    {
+      "status":"event_deleted",
+      "message":"The event was successfully deleted"
+    }
+    ```
+    * 404 Not Found
+    ```json
+    {
+      "status":"event_not_found",
+      "message":"The event was not found"
+    }
+    ```
+
+#### `PATCH` `/events/:id`
+Update a event.
+- Method: `PATCH`
+- Endpoint: `/events/:id`
+- Input:
+    The `Content-Type` HTTP header should be set to `application/json`
+
+    ```json
+   {
+      "expression": "0 2 * * * *"
+   }
+    ```
+- Responses:
+    * 200 OK
+    ```json
+   {
+      "url":"your-api/job",
+      "expression": "0 2 * * * *",
+      "status": "active",
+      "max_retries": 2,
+      "retry_timeout": 3,
+      "updated_at": "2016-12-10T14:02:37.064641296-02:00",
+      "created_at": "2016-12-10T14:02:37.064641296-02:00"
+   }
+    ```
+    * 404 Not Found
+    ```json
+    {
+      "status":"event_not_found",
+      "message":"The event was not found"
+    }
+    ```
+    * 422 Unprocessable entity:
+    ```json
+    {
+      "status":"invalid_json",
+      "message":"Cannot decode the given JSON payload"
+    }
+    ```
+    * 400 Bad Request
+    ```json
+    {
+      "status":"invalid_event",
+      "message":"<reason>"
+    }
+```
 
 ## Cron Format
 The cron expression format allowed is:
@@ -82,7 +230,7 @@ more details about expression format [here](https://godoc.org/github.com/robfig/
 - Create new Pull Request
 
 ## Badges
-[![CircleCI](https://circleci.com/gh/EmpregoLigado/cron-srv.svg?style=svg)](https://circleci.com/gh/EmpregoLigado/cron-srv)
-[![Go Report Card](https://goreportcard.com/badge/github.com/EmpregoLigado/cron-srv)](https://goreportcard.com/report/github.com/EmpregoLigado/cron-srv)
-[![](https://images.microbadger.com/badges/image/rafaeljesus/cron-srv.svg)](https://microbadger.com/images/rafaeljesus/cron-srv "Get your own image badge on microbadger.com")
-[![](https://images.microbadger.com/badges/version/rafaeljesus/cron-srv.svg)](https://microbadger.com/images/rafaeljesus/cron-srv "Get your own version badge on microbadger.com")
+[![CircleCI](https://circleci.com/gh/rafaeljesus/crony.svg?style=svg)](https://circleci.com/gh/rafaeljesus/crony)
+[![Go Report Card](https://goreportcard.com/badge/github.com/rafaeljesus/crony)](https://goreportcard.com/report/github.com/rafaeljesus/crony)
+[![](https://images.microbadger.com/badges/image/rafaeljesus/crony.svg)](https://microbadger.com/images/rafaeljesus/crony "Get your own image badge on microbadger.com")
+[![](https://images.microbadger.com/badges/version/rafaeljesus/crony.svg)](https://microbadger.com/images/rafaeljesus/crony "Get your own version badge on microbadger.com")
