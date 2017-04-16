@@ -207,7 +207,7 @@ Update a event.
       "status":"invalid_event",
       "message":"<reason>"
     }
-```
+    ```
 
 ## Cron Format
 The cron expression format allowed is:
