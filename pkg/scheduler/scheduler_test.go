@@ -1,24 +1,23 @@
 package scheduler
 
 import (
-	"github.com/EmpregoLigado/cron-srv/mock"
-	"github.com/EmpregoLigado/cron-srv/models"
 	"testing"
+
+	"github.com/EmpregoLigado/cron-srv/pkg/mocks"
+	"github.com/EmpregoLigado/cron-srv/pkg/models"
 )
 
 func TestScheduleAll(t *testing.T) {
-	repoMock := mock.NewRepo()
+	repoMock := mocks.NewEventRepo()
 	s := New()
-	if err := s.ScheduleAll(repoMock); err != nil {
-		t.Errorf("Expected to schedule all events %s", err)
-	}
+	s.ScheduleAll(repoMock)
 }
 
 func TestSchedulerCreate(t *testing.T) {
 	s := New()
 	c := &models.Event{Id: 1, Expression: "* * * * *"}
 	if err := s.Create(c); err != nil {
-		t.Errorf("Expected to schedule a cron %s", err)
+		t.Fail()
 	}
 }
 
@@ -26,12 +25,12 @@ func TestSchedulerFind(t *testing.T) {
 	s := New()
 	c := &models.Event{Id: 1, Expression: "* * * * *"}
 	if err := s.Create(c); err != nil {
-		t.Errorf("Expected to schedule a cron %s", err)
+		t.Fail()
 	}
 
 	_, err := s.Find(c.Id)
 	if err != nil {
-		t.Errorf("Expected to find a cron %s", err)
+		t.Fail()
 	}
 }
 
@@ -39,12 +38,12 @@ func TestSchedulerUpdate(t *testing.T) {
 	s := New()
 	c := &models.Event{Id: 1, Expression: "* * * * *"}
 	if err := s.Create(c); err != nil {
-		t.Errorf("Expected to schedule a cron %s", err)
+		t.Fail()
 	}
 
 	c.Status = "active"
 	if err := s.Update(c); err != nil {
-		t.Errorf("Expected to update a scheduled cron %s", err)
+		t.Fail()
 	}
 }
 
@@ -52,10 +51,10 @@ func TestSchedulerDelete(t *testing.T) {
 	s := New()
 	c := &models.Event{Id: 1, Expression: "* * * * *"}
 	if err := s.Create(c); err != nil {
-		t.Errorf("Expected to schedule a cron %s", err)
+		t.Fail()
 	}
 
 	if err := s.Delete(c.Id); err != nil {
-		t.Errorf("Expected to delete a scheduled cron %s", err)
+		t.Fail()
 	}
 }

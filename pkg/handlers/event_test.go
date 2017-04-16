@@ -1,26 +1,27 @@
-package api
+package handlers
 
 import (
 	"encoding/json"
-	"github.com/EmpregoLigado/cron-srv/mock"
-	"github.com/EmpregoLigado/cron-srv/models"
-	"github.com/nbari/violetear"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
 	"strings"
 	"testing"
+
+	"github.com/EmpregoLigado/cron-srv/pkg/mocks"
+	"github.com/EmpregoLigado/cron-srv/pkg/models"
+	"github.com/nbari/violetear"
 )
 
 func TestEventsIndex(t *testing.T) {
-	schedulerMock := mock.NewScheduler()
-	repoMock := mock.NewRepo()
-	h := NewAPIHandler(repoMock, schedulerMock)
+	schedulerMock := mocks.NewScheduler()
+	repoMock := mocks.NewEventRepo()
+	h := NewEventsHandler(repoMock, schedulerMock)
 
 	res := httptest.NewRecorder()
 	req, err := http.NewRequest("GET", "/v1/events", nil)
 	if err != nil {
-		t.Errorf("Expected initialize request %s", err)
+		t.Fail()
 	}
 
 	r := violetear.New()
@@ -29,7 +30,7 @@ func TestEventsIndex(t *testing.T) {
 
 	events := []models.Event{}
 	if err := json.NewDecoder(res.Body).Decode(&events); err != nil {
-		t.Errorf("Expected to decode response json %s", err)
+		t.Fail()
 	}
 
 	if len(events) == 0 {
@@ -42,14 +43,14 @@ func TestEventsIndex(t *testing.T) {
 }
 
 func TestEventsIndexByStatus(t *testing.T) {
-	schedulerMock := mock.NewScheduler()
-	repoMock := mock.NewRepo()
-	h := NewAPIHandler(repoMock, schedulerMock)
+	schedulerMock := mocks.NewScheduler()
+	repoMock := mocks.NewEventRepo()
+	h := NewEventsHandler(repoMock, schedulerMock)
 
 	res := httptest.NewRecorder()
 	req, err := http.NewRequest("GET", "/v1/events?status=active", nil)
 	if err != nil {
-		t.Errorf("Expected initialize request %s", err)
+		t.Fail()
 	}
 
 	r := violetear.New()
@@ -66,14 +67,14 @@ func TestEventsIndexByStatus(t *testing.T) {
 }
 
 func TestEventsIndexByExpression(t *testing.T) {
-	schedulerMock := mock.NewScheduler()
-	repoMock := mock.NewRepo()
-	h := NewAPIHandler(repoMock, schedulerMock)
+	schedulerMock := mocks.NewScheduler()
+	repoMock := mocks.NewEventRepo()
+	h := NewEventsHandler(repoMock, schedulerMock)
 
 	res := httptest.NewRecorder()
 	req, err := http.NewRequest("GET", "/v1/events?expression=* * * * *", nil)
 	if err != nil {
-		t.Errorf("Expected initialize request %s", err)
+		t.Fail()
 	}
 
 	r := violetear.New()
@@ -90,15 +91,15 @@ func TestEventsIndexByExpression(t *testing.T) {
 }
 
 func TestEventCreate(t *testing.T) {
-	schedulerMock := mock.NewScheduler()
-	repoMock := mock.NewRepo()
-	h := NewAPIHandler(repoMock, schedulerMock)
+	schedulerMock := mocks.NewScheduler()
+	repoMock := mocks.NewEventRepo()
+	h := NewEventsHandler(repoMock, schedulerMock)
 
 	res := httptest.NewRecorder()
 	body := strings.NewReader(`{"url":"http://foo.com"}`)
 	req, err := http.NewRequest("POST", "/v1/events", body)
 	if err != nil {
-		t.Errorf("Expected initialize request %s", err)
+		t.Fail()
 	}
 
 	r := violetear.New()
@@ -119,14 +120,14 @@ func TestEventCreate(t *testing.T) {
 }
 
 func TestEventShow(t *testing.T) {
-	schedulerMock := mock.NewScheduler()
-	repoMock := mock.NewRepo()
-	h := NewAPIHandler(repoMock, schedulerMock)
+	schedulerMock := mocks.NewScheduler()
+	repoMock := mocks.NewEventRepo()
+	h := NewEventsHandler(repoMock, schedulerMock)
 
 	res := httptest.NewRecorder()
 	req, err := http.NewRequest("GET", "/v1/events/1", nil)
 	if err != nil {
-		t.Errorf("Expected initialize request %s", err)
+		t.Fail()
 	}
 
 	r := violetear.New()
@@ -144,15 +145,15 @@ func TestEventShow(t *testing.T) {
 }
 
 func TestEventsUpdate(t *testing.T) {
-	schedulerMock := mock.NewScheduler()
-	repoMock := mock.NewRepo()
-	h := NewAPIHandler(repoMock, schedulerMock)
+	schedulerMock := mocks.NewScheduler()
+	repoMock := mocks.NewEventRepo()
+	h := NewEventsHandler(repoMock, schedulerMock)
 
 	res := httptest.NewRecorder()
 	body := strings.NewReader(`{"url":"http://foo.com"}`)
 	req, err := http.NewRequest("PUT", "/v1/events/1", body)
 	if err != nil {
-		t.Errorf("Expected initialize request %s", err)
+		t.Fail()
 	}
 
 	r := violetear.New()

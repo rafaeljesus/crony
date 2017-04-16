@@ -1,9 +1,10 @@
 package runner
 
 import (
+	"time"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/rubyist/circuitbreaker"
-	"time"
 )
 
 type Runner interface {

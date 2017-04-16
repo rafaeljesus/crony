@@ -1,8 +1,8 @@
-package mock
+package mocks
 
 import (
-	"github.com/EmpregoLigado/cron-srv/models"
-	"github.com/EmpregoLigado/cron-srv/repo"
+	"github.com/EmpregoLigado/cron-srv/pkg/models"
+	"github.com/EmpregoLigado/cron-srv/pkg/repos"
 	"github.com/robfig/cron"
 )
 
@@ -39,6 +39,6 @@ func (s SchedulerMock) Find(id uint) (c *cron.Cron, err error) {
 	return
 }
 
-func (sm *SchedulerMock) ScheduleAll(repo repo.Repo) (err error) {
+func (s *SchedulerMock) ScheduleAll(repo repos.EventRepo) {
 	return
 }

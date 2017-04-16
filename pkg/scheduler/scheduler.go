@@ -2,11 +2,13 @@ package scheduler
 
 import (
 	"errors"
-	"github.com/EmpregoLigado/cron-srv/models"
-	"github.com/EmpregoLigado/cron-srv/repo"
-	"github.com/EmpregoLigado/cron-srv/runner"
-	"github.com/robfig/cron"
 	"sync"
+
+	"github.com/EmpregoLigado/cron-srv/pkg/models"
+	"github.com/EmpregoLigado/cron-srv/pkg/repos"
+	"github.com/EmpregoLigado/cron-srv/pkg/runner"
+	log "github.com/Sirupsen/logrus"
+	"github.com/robfig/cron"
 )
 
 var (
@@ -18,7 +20,7 @@ type Scheduler interface {
 	Update(cron *models.Event) error
 	Delete(id uint) error
 	Find(id uint) (*cron.Cron, error)
-	ScheduleAll(repo repo.Repo) error
+	ScheduleAll(r repos.EventRepo)
 }
 
 type scheduler struct {
@@ -38,20 +40,18 @@ func New() Scheduler {
 	return s
 }
 
-func (s *scheduler) ScheduleAll(repo repo.Repo) (err error) {
-	crons := []models.Event{}
-	query := new(models.Query)
-	if err = repo.FindEvents(&crons, query); err != nil {
+func (s *scheduler) ScheduleAll(r repos.EventRepo) {
+	events, err := r.Search(&models.Query{})
+	if err != nil {
+		log.Error("Failed to find events!")
 		return
 	}
 
-	for _, cron := range crons {
-		if err = s.Create(&cron); err != nil {
-			return
+	for _, e := range events {
+		if err = s.Create(&e); err != nil {
+			log.Error("Failed to create event!")
 		}
 	}
-
-	return
 }
 
 func (s *scheduler) Create(event *models.Event) (err error) {

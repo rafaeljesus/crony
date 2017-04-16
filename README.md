@@ -10,8 +10,8 @@ Cron Srv works by calling back to your application via HTTP GET according to a s
 ## Setup
 Env vars
 ```bash
-export CRON_SRV_DB="postgresql://postgres@localhost/cron_srv_dev?sslmode=disable"
-export CRON_SRV_PORT=3000
+export DATASTORE_URL="postgresql://postgres@localhost/cron_srv_dev?sslmode=disable"
+export PORT=3000
 ```
 > **Note:** You must have created the database 'cron_srv_dev' in postgres running at localhost (or replace with valid database name and IP);
 

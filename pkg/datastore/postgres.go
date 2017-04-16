@@ -1,23 +1,20 @@
-package models
+package datastore
 
 import (
+	"github.com/EmpregoLigado/cron-srv/pkg/models"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
-type DB struct {
-	*gorm.DB
-}
-
-type DBConfig struct {
+type PGConfig struct {
 	Url         string
 	MaxIdleConn int
 	MaxOpenConn int
 	LogMode     bool
 }
 
-func NewDB(c DBConfig) (db *DB, err error) {
-	conn, err := gorm.Open("postgres", c.Url)
+func NewPostgres(c PGConfig) (conn *gorm.DB, err error) {
+	conn, err = gorm.Open("postgres", c.Url)
 	if err != nil {
 		return
 	}
@@ -30,15 +27,16 @@ func NewDB(c DBConfig) (db *DB, err error) {
 		c.MaxIdleConn = 10
 	}
 
-	if c.MaxIdleConn == 0 {
-		c.MaxIdleConn = 100
+	if c.MaxOpenConn == 0 {
+		c.MaxOpenConn = 100
 	}
 
 	conn.DB().SetMaxIdleConns(c.MaxIdleConn)
 	conn.DB().SetMaxOpenConns(c.MaxOpenConn)
 	conn.LogMode(c.LogMode)
 
-	db = &DB{conn}
+	// FIXME temporary
+	conn.AutoMigrate(&models.Event{})
 
 	return
 }

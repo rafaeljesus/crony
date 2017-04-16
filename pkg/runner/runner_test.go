@@ -1,9 +1,10 @@
 package runner
 
 import (
-	"gopkg.in/h2non/gock.v1"
 	"testing"
 	"time"
+
+	"gopkg.in/h2non/gock.v1"
 )
 
 func TestRunnerRun(t *testing.T) {
@@ -22,6 +23,6 @@ func TestRunnerRun(t *testing.T) {
 	time.Sleep(time.Second * 1)
 
 	if !gock.IsDone() {
-		t.Errorf("Expected to call %s", url)
+		t.Fail()
 	}
 }
