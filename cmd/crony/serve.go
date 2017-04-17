@@ -48,13 +48,13 @@ func Serve(cmd *cobra.Command, args []string) {
 	r.RequestID = "X-Request-ID"
 	r.AddRegex(":id", `^\d+$`)
 
-	r.HandleFunc("/v1/healthz", healthzHandler.HealthzIndex, "GET")
+	r.HandleFunc("/health", healthzHandler.HealthzIndex, "GET")
 
-	r.HandleFunc("/v1/events", eventsHandler.EventsIndex, "GET")
-	r.HandleFunc("/v1/events", eventsHandler.EventsCreate, "POST")
-	r.HandleFunc("/v1/events/:id", eventsHandler.EventsShow, "GET")
-	r.HandleFunc("/v1/events/:id", eventsHandler.EventsUpdate, "PUT")
-	r.HandleFunc("/v1/events/:id", eventsHandler.EventsDelete, "DELETE")
+	r.HandleFunc("/events", eventsHandler.EventsIndex, "GET")
+	r.HandleFunc("/events", eventsHandler.EventsCreate, "POST")
+	r.HandleFunc("/events/:id", eventsHandler.EventsShow, "GET")
+	r.HandleFunc("/events/:id", eventsHandler.EventsUpdate, "PUT")
+	r.HandleFunc("/events/:id", eventsHandler.EventsDelete, "DELETE")
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", env.Port), r))
 }

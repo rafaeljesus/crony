@@ -1,9 +1,9 @@
 package datastore
 
 import (
-	"github.com/EmpregoLigado/crony/pkg/models"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"github.com/rafaeljesus/crony/pkg/models"
 )
 
 type PGConfig struct {

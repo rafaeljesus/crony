@@ -19,13 +19,13 @@ func TestHealthzIndex(t *testing.T) {
 	h := NewHealthzHandler(checkers)
 
 	res := httptest.NewRecorder()
-	req, err := http.NewRequest("GET", "/v1/healthz", nil)
+	req, err := http.NewRequest("GET", "/healthz", nil)
 	if err != nil {
 		t.Fail()
 	}
 
 	r := violetear.New()
-	r.HandleFunc("/v1/healthz", h.HealthzIndex, "GET")
+	r.HandleFunc("/healthz", h.HealthzIndex, "GET")
 	r.ServeHTTP(res, req)
 
 	response := make(map[string]bool)

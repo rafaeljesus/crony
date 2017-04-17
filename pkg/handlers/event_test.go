@@ -14,18 +14,18 @@ import (
 )
 
 func TestEventsIndex(t *testing.T) {
-	schedulerMock := mocks.NewScheduler()
 	repoMock := mocks.NewEventRepo()
+	schedulerMock := mocks.NewScheduler()
 	h := NewEventsHandler(repoMock, schedulerMock)
 
 	res := httptest.NewRecorder()
-	req, err := http.NewRequest("GET", "/v1/events", nil)
+	req, err := http.NewRequest("GET", "/events", nil)
 	if err != nil {
 		t.Fail()
 	}
 
 	r := violetear.New()
-	r.HandleFunc("/v1/events", h.EventsIndex, "GET")
+	r.HandleFunc("/events", h.EventsIndex, "GET")
 	r.ServeHTTP(res, req)
 
 	events := []models.Event{}
@@ -48,13 +48,13 @@ func TestEventsIndexByStatus(t *testing.T) {
 	h := NewEventsHandler(repoMock, schedulerMock)
 
 	res := httptest.NewRecorder()
-	req, err := http.NewRequest("GET", "/v1/events?status=active", nil)
+	req, err := http.NewRequest("GET", "/events?status=active", nil)
 	if err != nil {
 		t.Fail()
 	}
 
 	r := violetear.New()
-	r.HandleFunc("/v1/events", h.EventsIndex, "GET")
+	r.HandleFunc("/events", h.EventsIndex, "GET")
 	r.ServeHTTP(res, req)
 
 	if !repoMock.ByStatus {
@@ -72,13 +72,13 @@ func TestEventsIndexByExpression(t *testing.T) {
 	h := NewEventsHandler(repoMock, schedulerMock)
 
 	res := httptest.NewRecorder()
-	req, err := http.NewRequest("GET", "/v1/events?expression=* * * * *", nil)
+	req, err := http.NewRequest("GET", "/events?expression=* * * * *", nil)
 	if err != nil {
 		t.Fail()
 	}
 
 	r := violetear.New()
-	r.HandleFunc("/v1/events", h.EventsIndex, "GET")
+	r.HandleFunc("/events", h.EventsIndex, "GET")
 	r.ServeHTTP(res, req)
 
 	if !repoMock.ByExpression {
@@ -97,13 +97,13 @@ func TestEventCreate(t *testing.T) {
 
 	res := httptest.NewRecorder()
 	body := strings.NewReader(`{"url":"http://foo.com"}`)
-	req, err := http.NewRequest("POST", "/v1/events", body)
+	req, err := http.NewRequest("POST", "/events", body)
 	if err != nil {
 		t.Fail()
 	}
 
 	r := violetear.New()
-	r.HandleFunc("/v1/events", h.EventsCreate, "POST")
+	r.HandleFunc("/events", h.EventsCreate, "POST")
 	r.ServeHTTP(res, req)
 
 	if !repoMock.Created {
@@ -125,14 +125,14 @@ func TestEventShow(t *testing.T) {
 	h := NewEventsHandler(repoMock, schedulerMock)
 
 	res := httptest.NewRecorder()
-	req, err := http.NewRequest("GET", "/v1/events/1", nil)
+	req, err := http.NewRequest("GET", "/events/1", nil)
 	if err != nil {
 		t.Fail()
 	}
 
 	r := violetear.New()
 	r.AddRegex(":id", `^\d+$`)
-	r.HandleFunc("/v1/events/:id", h.EventsShow, "GET")
+	r.HandleFunc("/events/:id", h.EventsShow, "GET")
 	r.ServeHTTP(res, req)
 
 	if !repoMock.Found {
@@ -151,14 +151,14 @@ func TestEventsUpdate(t *testing.T) {
 
 	res := httptest.NewRecorder()
 	body := strings.NewReader(`{"url":"http://foo.com"}`)
-	req, err := http.NewRequest("PUT", "/v1/events/1", body)
+	req, err := http.NewRequest("PUT", "/events/1", body)
 	if err != nil {
 		t.Fail()
 	}
 
 	r := violetear.New()
 	r.AddRegex(":id", `^\d+$`)
-	r.HandleFunc("/v1/events/:id", h.EventsUpdate, "PUT")
+	r.HandleFunc("/events/:id", h.EventsUpdate, "PUT")
 	r.ServeHTTP(res, req)
 
 	if !repoMock.Updated {

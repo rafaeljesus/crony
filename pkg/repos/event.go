@@ -1,6 +1,8 @@
 package repos
 
 import (
+	"time"
+
 	"github.com/jinzhu/gorm"
 	"github.com/rafaeljesus/crony/pkg/models"
 )
@@ -22,6 +24,7 @@ func NewEvent(db *gorm.DB) *Event {
 }
 
 func (r *Event) Create(e *models.Event) error {
+	e.CreatedAt = time.Now()
 	return r.db.Create(e).Error
 }
 
@@ -31,10 +34,12 @@ func (r *Event) FindById(id int) (e *models.Event, err error) {
 }
 
 func (r *Event) Update(e *models.Event) error {
+	e.UpdatedAt = time.Now()
 	return r.db.Save(e).Error
 }
 
 func (r *Event) Delete(e *models.Event) error {
+	e.DeletedAt = time.Now()
 	return r.db.Delete(e).Error
 }
 

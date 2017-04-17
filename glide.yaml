@@ -1,4 +1,4 @@
-package: github.com/EmpregoLigado/cron-srv
+package: github.com/rafaeljesus/crony
 import:
 - package: github.com/Sirupsen/logrus
   version: v0.11.5

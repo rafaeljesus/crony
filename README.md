@@ -100,22 +100,22 @@ Create a new event.
     * 422 Unprocessable entity:
     ```json
     {
-      "status":"invalid_json",
-      "message":"Cannot decode the given JSON payload"
+      "status":"invalid_event",
+      "message":"<reason>"
     }
     ```
     * 400 Bad Request
     ```json
     {
-      "status":"invalid_event",
-      "message":"<reason>"
+      "status":"invalid_json",
+      "message":"Cannot decode the given JSON payload"
     }
     ```
     Common reasons:
     - the event job already scheduled. The `message` will be `Event already exists`
     - the expression must be crontab format.
     - the retry must be between `0` and `10`
-    - the status must be `active` or `resumed`
+    - the status must be `active` or `incative`
 
 #### `GET` `/events/:id`
 Get a specific event.

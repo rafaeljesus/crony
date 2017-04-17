@@ -18,10 +18,7 @@ type EventsHandler struct {
 }
 
 func NewEventsHandler(r repos.EventRepo, s scheduler.Scheduler) *EventsHandler {
-	return &EventsHandler{
-		EventRepo: r,
-		Scheduler: s,
-	}
+	return &EventsHandler{r, s}
 }
 
 func (h *EventsHandler) EventsIndex(w http.ResponseWriter, r *http.Request) {
@@ -42,6 +39,11 @@ func (h *EventsHandler) EventsCreate(w http.ResponseWriter, r *http.Request) {
 	event := new(models.Event)
 	if err := json.NewDecoder(r.Body).Decode(event); err != nil {
 		response.JSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if errors, valid := event.Validate(); !valid {
+		response.JSON(w, http.StatusBadRequest, errors)
 		return
 	}
 
@@ -89,18 +91,18 @@ func (h *EventsHandler) EventsUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	e := new(models.Event)
-	if err := json.NewDecoder(r.Body).Decode(e); err != nil {
+	if errors, valid := event.Validate(); !valid {
+		response.JSON(w, http.StatusBadRequest, errors)
+		return
+	}
+
+	newEvent := new(models.Event)
+	if err := json.NewDecoder(r.Body).Decode(newEvent); err != nil {
 		response.JSON(w, http.StatusNotFound, err)
 		return
 	}
 
-	event.Status = e.Status
-	event.Expression = e.Expression
-	event.Url = e.Url
-	event.Retries = e.Retries
-	event.Timeout = e.Timeout
-
+	event.SetAttributes(newEvent)
 	if err := h.EventRepo.Update(event); err != nil {
 		response.JSON(w, http.StatusUnprocessableEntity, err)
 		return

@@ -1,8 +1,8 @@
 package mocks
 
 import (
-	"github.com/EmpregoLigado/cron-srv/pkg/models"
-	"github.com/EmpregoLigado/cron-srv/pkg/repos"
+	"github.com/rafaeljesus/crony/pkg/models"
+	"github.com/rafaeljesus/crony/pkg/repos"
 	"github.com/robfig/cron"
 )
 
@@ -20,7 +20,7 @@ func NewScheduler() *SchedulerMock {
 	}
 }
 
-func (s *SchedulerMock) Create(event *models.Event) (err error) {
+func (s *SchedulerMock) Create(*models.Event) (err error) {
 	s.Created = true
 	return
 }

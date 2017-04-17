@@ -14,7 +14,7 @@ type Runner interface {
 type Config struct {
 	Url     string
 	Retries int64
-	Timeout int64
+	Timeout time.Duration
 }
 
 type runner struct {

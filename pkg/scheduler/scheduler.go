@@ -1,7 +1,6 @@
 package scheduler
 
 import (
-	"errors"
 	"sync"
 
 	log "github.com/Sirupsen/logrus"
@@ -11,13 +10,9 @@ import (
 	"github.com/robfig/cron"
 )
 
-var (
-	ErrEventNotExist = errors.New("finding a scheduled event requires a existent cron id")
-)
-
 type Scheduler interface {
-	Create(cron *models.Event) error
-	Update(cron *models.Event) error
+	Create(event *models.Event) error
+	Update(event *models.Event) error
 	Delete(id uint) error
 	Find(id uint) (*cron.Cron, error)
 	ScheduleAll(r repos.EventRepo)
@@ -40,26 +35,12 @@ func New() Scheduler {
 	return s
 }
 
-func (s *scheduler) ScheduleAll(r repos.EventRepo) {
-	events, err := r.Search(&models.Query{})
-	if err != nil {
-		log.Error("Failed to find events!")
-		return
-	}
-
-	for _, e := range events {
-		if err = s.Create(&e); err != nil {
-			log.Error("Failed to create event!")
-		}
-	}
-}
-
-func (s *scheduler) Create(event *models.Event) (err error) {
-	s.Cron.AddFunc(event.Expression, func() {
+func (s *scheduler) Create(e *models.Event) (err error) {
+	s.Cron.AddFunc(e.Expression, func() {
 		c := &runner.Config{
-			Url:     event.Url,
-			Retries: event.Retries,
-			Timeout: event.Timeout,
+			Url:     e.Url,
+			Retries: e.Retries,
+			Timeout: e.RetryTimeout,
 		}
 
 		r := runner.New()
@@ -69,7 +50,7 @@ func (s *scheduler) Create(event *models.Event) (err error) {
 	s.Lock()
 	defer s.Unlock()
 
-	s.Kv[event.Id] = s.Cron
+	s.Kv[e.Id] = s.Cron
 
 	return
 }
@@ -87,12 +68,12 @@ func (s *scheduler) Find(id uint) (cron *cron.Cron, err error) {
 	return
 }
 
-func (s *scheduler) Update(cron *models.Event) (err error) {
-	if err = s.Delete(cron.Id); err != nil {
+func (s *scheduler) Update(e *models.Event) (err error) {
+	if err = s.Delete(e.Id); err != nil {
 		return
 	}
 
-	return s.Create(cron)
+	return s.Create(e)
 }
 
 func (s scheduler) Delete(id uint) (err error) {
@@ -109,4 +90,18 @@ func (s scheduler) Delete(id uint) (err error) {
 	s.Kv[id] = nil
 
 	return
+}
+
+func (s *scheduler) ScheduleAll(r repos.EventRepo) {
+	events, err := r.Search(&models.Query{})
+	if err != nil {
+		log.Error("Failed to find events!")
+		return
+	}
+
+	for _, e := range events {
+		if err = s.Create(&e); err != nil {
+			log.Error("Failed to create event!")
+		}
+	}
 }

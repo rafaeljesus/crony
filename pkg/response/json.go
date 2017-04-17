@@ -5,6 +5,12 @@ import (
 	"net/http"
 )
 
+type Message struct {
+	code    int
+	Status  string `json:"status"`
+	Message string `json:"message"`
+}
+
 func JSON(w http.ResponseWriter, code int, v interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
