@@ -17,13 +17,13 @@ dependencies:
 
 test:
   override:
-    - cd "$APP_PATH" && go vet && go test ./pkg/models/... ./pkg/handlers/... ./pkg/scheduler/... ./pkg/runner/... -v -race -cover $(glide nv)
+    - cd "$APP_PATH" && make test
 
 deployment:
   master:
     branch: master
     commands:
-      - cd "$APP_PATH" && sh build
+      - cd "$APP_PATH" && make build
       - docker build -t rafaeljesus/crony .
       - docker login -e $DOCKERHUB_EMAIL -u $DOCKERHUB_USER -p $DOCKERHUB_PASS
       - docker tag rafaeljesus/crony rafaeljesus/crony:master

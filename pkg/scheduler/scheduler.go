@@ -76,7 +76,7 @@ func (s *scheduler) Update(e *models.Event) (err error) {
 	return s.Create(e)
 }
 
-func (s scheduler) Delete(id uint) (err error) {
+func (s *scheduler) Delete(id uint) (err error) {
 	s.Lock()
 	defer s.Unlock()
 

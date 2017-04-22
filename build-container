@@ -1,2 +1,2 @@
-GOOS=linux bash build
+GOOS=linux CGO_ENABLED=0 GOOS=linux go build -a --ldflags '-extldflags "-static"' -tags netgo -installsuffix netgo -o crony .
 docker build -t rafaeljesus/crony .
