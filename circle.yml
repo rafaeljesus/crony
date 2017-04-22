@@ -1,7 +1,7 @@
 machine:
   environment:
-    IMPORT_PATH: "/home/ubuntu/.go_workspace/src/github.com/EmpregoLigado"
-    APP_PATH: "$IMPORT_PATH/cron-srv"
+    IMPORT_PATH: "/home/ubuntu/.go_workspace/src/github.com/rafaeljesus"
+    APP_PATH: "$IMPORT_PATH/crony"
   services:
     - docker
 
@@ -17,14 +17,14 @@ dependencies:
 
 test:
   override:
-    - cd "$APP_PATH" && go vet && go test ./api/... ./scheduler/... ./runner/... -v -race -cover $(glide nv)
+    - cd "$APP_PATH" && go vet && go test ./models/... ./handlers/... ./scheduler/... ./runner/... -v -race -cover $(glide nv)
 
 deployment:
   master:
     branch: master
     commands:
       - cd "$APP_PATH" && sh build
-      - docker build -t rafaeljesus/cron-srv .
+      - docker build -t rafaeljesus/crony .
       - docker login -e $DOCKERHUB_EMAIL -u $DOCKERHUB_USER -p $DOCKERHUB_PASS
-      - docker tag rafaeljesus/cron-srv rafaeljesus/cron-srv:master
-      - docker push rafaeljesus/cron-srv:master
+      - docker tag rafaeljesus/crony rafaeljesus/crony:master
+      - docker push rafaeljesus/crony:master
