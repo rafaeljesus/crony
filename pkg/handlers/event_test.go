@@ -96,7 +96,7 @@ func TestEventCreate(t *testing.T) {
 	h := NewEventsHandler(repoMock, schedulerMock)
 
 	res := httptest.NewRecorder()
-	body := strings.NewReader(`{"url":"http://foo.com"}`)
+	body := strings.NewReader(`{"url":"http://foo.com","expression":"* * * * *"}`)
 	req, err := http.NewRequest("POST", "/events", body)
 	if err != nil {
 		t.Fail()
@@ -150,7 +150,7 @@ func TestEventsUpdate(t *testing.T) {
 	h := NewEventsHandler(repoMock, schedulerMock)
 
 	res := httptest.NewRecorder()
-	body := strings.NewReader(`{"url":"http://foo.com"}`)
+	body := strings.NewReader(`{"url":"http://foo.com","expression":"* * * * *"}`)
 	req, err := http.NewRequest("PUT", "/events/1", body)
 	if err != nil {
 		t.Fail()
@@ -171,5 +171,34 @@ func TestEventsUpdate(t *testing.T) {
 
 	if res.Code != http.StatusOK {
 		t.Errorf("Expected status %d to be equal %d", res.Code, http.StatusOK)
+	}
+}
+
+func TestEventsDelete(t *testing.T) {
+	schedulerMock := mocks.NewScheduler()
+	repoMock := mocks.NewEventRepo()
+	h := NewEventsHandler(repoMock, schedulerMock)
+
+	res := httptest.NewRecorder()
+	req, err := http.NewRequest("DELETE", "/events/1", nil)
+	if err != nil {
+		t.Fail()
+	}
+
+	r := violetear.New()
+	r.AddRegex(":id", `^\d+$`)
+	r.HandleFunc("/events/:id", h.EventsDelete, "DELETE")
+	r.ServeHTTP(res, req)
+
+	if !repoMock.Deleted {
+		t.Error("Expected repo update to be called")
+	}
+
+	if !schedulerMock.Deleted {
+		t.Error("Expected scheduler update to be called")
+	}
+
+	if res.Code != http.StatusNoContent {
+		t.Errorf("Expected status %d to be equal %d", res.Code, http.StatusNoContent)
 	}
 }

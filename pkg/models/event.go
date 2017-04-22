@@ -5,6 +5,11 @@ import (
 	"time"
 )
 
+var (
+	Active   = "active"
+	Inactive = "inactive"
+)
+
 type Event struct {
 	Id           uint          `json:"id" gorm:"primary_key"`
 	Url          string        `json:"url" gorm:"not null"`
@@ -17,25 +22,31 @@ type Event struct {
 	DeletedAt    time.Time     `json:"deleted_at,omitempty"`
 }
 
-func (e *Event) Validate() (errors map[string][]string, ok bool) {
-	errors = make(map[string][]string)
+func NewEvent() *Event {
+	return &Event{
+		Status:       Active,
+		Retries:      1,
+		RetryTimeout: time.Second * 1,
+	}
+}
+
+func (e *Event) Validate() (errors map[string]string, ok bool) {
+	errors = make(map[string]string)
 	if e.Url == "" {
-		errors["url"] = append(errors["url"], "field url is mandatory")
+		errors["url"] = "field url is mandatory"
 	}
 
 	if e.Expression == "" {
-		errors["expression"] = append(errors["expression"], "field expression is mandatory")
+		errors["expression"] = "field expression is mandatory"
 	}
 
-	if e.Status != "" {
-		match, err := regexp.MatchString("^active$|^inactive$", e.Status)
-		if err != nil || !match {
-			errors["status"] = append(errors["status"], "field status must be active or inactive")
-		}
+	match, err := regexp.MatchString("^active$|^inactive$", e.Status)
+	if err != nil || !match {
+		errors["status"] = "field status must be active or inactive"
 	}
 
 	if e.Retries < 0 || e.Retries > 10 {
-		errors["retries"] = append(errors["retries"], "retries must be between 0 and 10")
+		errors["retries"] = "field retries must be between 0 and 10"
 	}
 
 	ok = len(errors) == 0

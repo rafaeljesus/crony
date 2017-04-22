@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/rafaeljesus/crony/pkg/checker"
-	"github.com/rafaeljesus/crony/pkg/response"
+	"github.com/rafaeljesus/crony/pkg/render"
 )
 
 type HealthzHandler struct {
@@ -22,5 +22,5 @@ func (h *HealthzHandler) HealthzIndex(w http.ResponseWriter, r *http.Request) {
 		payload[k] = v.IsAlive()
 	}
 
-	response.JSON(w, http.StatusOK, payload)
+	render.JSON(w, http.StatusOK, payload)
 }

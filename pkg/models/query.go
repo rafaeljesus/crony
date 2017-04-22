@@ -6,10 +6,7 @@ type Query struct {
 }
 
 func NewQuery(status, expression string) *Query {
-	return &Query{
-		Status:     status,
-		Expression: expression,
-	}
+	return &Query{status, expression}
 }
 
 func (q *Query) IsEmpty() bool {
