@@ -19,13 +19,12 @@ mkdir -p $GOPATH/src/github.com/rafaeljesus
 cd $GOPATH/src/github.com/rafaeljesus
 git clone https://github.com/rafaeljesus/crony.git
 cd crony
-glide install
-go build
+make all
 ```
 
 ## Running server
 ```
-./crony
+./dist/crony
 # => Starting Crony at port 3000
 ```
 

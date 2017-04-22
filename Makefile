@@ -7,7 +7,7 @@ IGNORED_PACKAGES := /vendor/
 
 .PHONY: all clean deps build
 
-all: clean deps build
+all: clean deps test build
 
 deps:
 	@echo "$(OK_COLOR)==> Installing glide dependencies$(NO_COLOR)"
