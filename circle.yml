@@ -25,6 +25,6 @@ deployment:
     commands:
       - cd "$APP_PATH" && make build
       - docker build -t rafaeljesus/crony .
-      - docker login -e $DOCKERHUB_EMAIL -u $DOCKERHUB_USER -p $DOCKERHUB_PASS
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       - docker tag rafaeljesus/crony rafaeljesus/crony:master
       - docker push rafaeljesus/crony:master
