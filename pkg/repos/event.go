@@ -29,8 +29,9 @@ func (r *Event) Create(e *models.Event) error {
 }
 
 func (r *Event) FindById(id int) (e *models.Event, err error) {
-	err = r.db.Find(e, id).Error
-	return
+	var event models.Event
+	err = r.db.Find(&event, id).Error
+	return &event, err
 }
 
 func (r *Event) Update(e *models.Event) error {
@@ -49,20 +50,20 @@ func (r *Event) Search(q *models.Query) (events []models.Event, err error) {
 		if err != nil {
 			return
 		}
-
 		return
 	}
 
-	var db *gorm.DB
+	var where map[string]interface{}
+	where = make(map[string]interface{})
+
 	if q.Status != "" {
-		db = db.Where("status = ?", q.Status)
+		where["status"] = q.Status
 	}
 
 	if q.Expression != "" {
-		db = db.Where("expression = ?", q.Expression)
+		where["expression"] = q.Expression
 	}
 
-	err = db.Find(events).Error
-
-	return
+	err = r.db.Where(where).Find(&events).Error
+	return events, err
 }
