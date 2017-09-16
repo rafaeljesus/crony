@@ -45,25 +45,18 @@ func (r *Event) Delete(e *models.Event) error {
 }
 
 func (r *Event) Search(q *models.Query) (events []models.Event, err error) {
-	if q.IsEmpty() {
-		err = r.db.Find(&events).Error
-		if err != nil {
-			return
+	where := make(map[string]interface{})
+
+	if !q.IsEmpty() {
+		if q.Status != "" {
+			where["status"] = q.Status
 		}
-		return
+
+		if q.Expression != "" {
+			where["expression"] = q.Expression
+		}
 	}
 
-	var where map[string]interface{}
-	where = make(map[string]interface{})
-
-	if q.Status != "" {
-		where["status"] = q.Status
-	}
-
-	if q.Expression != "" {
-		where["expression"] = q.Expression
-	}
-
-	err = r.db.Where(where).Find(&events).Error
+	err = r.db.Limit(q.GetLimit()).Offset(q.Offset).Where(where).Find(&events).Error
 	return events, err
 }
