@@ -21,10 +21,37 @@ func NewEventsHandler(r repos.EventRepo, s scheduler.Scheduler) *EventsHandler {
 	return &EventsHandler{r, s}
 }
 
+func getLimit(r *http.Request) (int, error) {
+	if r.URL.Query().Get("limit") != "" {
+		return strconv.Atoi(r.URL.Query().Get("limit"))
+	}
+	return 0, nil
+}
+
+func getOffset(r *http.Request) (int, error) {
+	if r.URL.Query().Get("offset") != "" {
+		return strconv.Atoi(r.URL.Query().Get("offset"))
+	}
+	return 0, nil
+}
+
 func (h *EventsHandler) EventsIndex(w http.ResponseWriter, r *http.Request) {
 	status := r.URL.Query().Get("status")
 	expression := r.URL.Query().Get("expression")
-	query := models.NewQuery(status, expression)
+
+	limit, err := getLimit(r)
+	if err != nil {
+		render.Response(w, http.StatusBadRequest, "Failed to decode request query")
+		return
+	}
+
+	offset, err := getOffset(r)
+	if err != nil {
+		render.Response(w, http.StatusBadRequest, "Failed to decode request query")
+		return
+	}
+
+	query := models.NewQuery(status, expression, limit, offset)
 
 	events, err := h.EventRepo.Search(query)
 	if err != nil {

@@ -29,8 +29,9 @@ func (r *Event) Create(e *models.Event) error {
 }
 
 func (r *Event) FindById(id int) (e *models.Event, err error) {
-	err = r.db.Find(e, id).Error
-	return
+	var event models.Event
+	err = r.db.Find(&event, id).Error
+	return &event, err
 }
 
 func (r *Event) Update(e *models.Event) error {
@@ -44,25 +45,18 @@ func (r *Event) Delete(e *models.Event) error {
 }
 
 func (r *Event) Search(q *models.Query) (events []models.Event, err error) {
-	if q.IsEmpty() {
-		err = r.db.Find(&events).Error
-		if err != nil {
-			return
+	where := make(map[string]interface{})
+
+	if !q.IsEmpty() {
+		if q.Status != "" {
+			where["status"] = q.Status
 		}
 
-		return
+		if q.Expression != "" {
+			where["expression"] = q.Expression
+		}
 	}
 
-	var db *gorm.DB
-	if q.Status != "" {
-		db = db.Where("status = ?", q.Status)
-	}
-
-	if q.Expression != "" {
-		db = db.Where("expression = ?", q.Expression)
-	}
-
-	err = db.Find(events).Error
-
-	return
+	err = r.db.Limit(q.GetLimit()).Offset(q.Offset).Where(where).Find(&events).Error
+	return events, err
 }
